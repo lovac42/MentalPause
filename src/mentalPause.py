@@ -2,11 +2,15 @@
 # Copyright: (C) 2019 Lovac42
 # Support: https://github.com/lovac42/MentalPause 
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.1
+# Version: 0.0.2
+
+
 
 # == User Config =========================================
 
-PARTIAL_CREDIT_DIVISOR = 2 # half credit
+# Partial credit auto adjusted between 1-10 based on number of lapses.
+MIN_CREDIT = 1
+MAX_CREDIT = 10
 
 # == End Config ==========================================
 ##########################################################
@@ -22,12 +26,16 @@ ANKI21 = version.startswith("2.1.")
 
 def daysLate(sched, card, _old):
     sel=sched.col.conf.get("mentalPause",0)
+
     if not sel:
         return _old(sched,card)
+
     if sel==1:
-        due=_old(sched,card)//PARTIAL_CREDIT_DIVISOR
+        div=min(MAX_CREDIT,max(MIN_CREDIT,card.lapses)) #1-10
+        due=_old(sched,card)//div
         return max(0, int(due))
-    return 0
+
+    return 0 #sel==2
 
 
 anki.sched.Scheduler._daysLate = wrap(anki.sched.Scheduler._daysLate, daysLate, 'around')
@@ -43,6 +51,7 @@ if ANKI21:
 #################################################
 import aqt
 import aqt.preferences
+from anki.lang import _
 from aqt.qt import *
 
 
@@ -88,7 +97,7 @@ def save(self):
 def toggle(self):
     checked=self.mentalPause.checkState()
     if checked==1:
-        txt='MentalPause: Partial Credits'
+        txt='MentalPause: Partial Credits (days_late/lapse)'
     else:
         txt='MentalPause: Disable Delay Bonus'
     self.mentalPause.setText(_(txt))
