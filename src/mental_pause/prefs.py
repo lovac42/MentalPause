@@ -6,9 +6,13 @@
 
 import aqt
 import aqt.preferences
+from aqt import mw
+from anki.hooks import wrap
 from anki.lang import _
 from aqt.qt import *
 
+from .lib.com.lovac42.anki.version import ANKI21
+from .lib.com.lovac42.anki.gui import muffins
 
 if ANKI21:
     from PyQt5 import QtCore, QtGui, QtWidgets
@@ -17,22 +21,12 @@ else:
 
 
 def setupUi(self, Preferences):
-    try:
-        grid=self.lrnStageGLayout
-    except AttributeError:
-        self.lrnStage=QtWidgets.QWidget()
-        self.tabWidget.addTab(self.lrnStage, "Muffins")
-        self.lrnStageGLayout=QtWidgets.QGridLayout()
-        self.lrnStageVLayout=QtWidgets.QVBoxLayout(self.lrnStage)
-        self.lrnStageVLayout.addLayout(self.lrnStageGLayout)
-        spacerItem=QtWidgets.QSpacerItem(1, 1, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        self.lrnStageVLayout.addItem(spacerItem)
-
-    r=self.lrnStageGLayout.rowCount()
+    grid_layout = muffins.getMuffinsTab(self)
+    r = grid_layout.rowCount()
     self.mentalPause=QtWidgets.QCheckBox(self.lrnStage)
     self.mentalPause.setText(_('MentalPause: Disable Delay Bonus'))
     self.mentalPause.setTristate(True)
-    self.lrnStageGLayout.addWidget(self.mentalPause, r, 0, 1, 3)
+    grid_layout.addWidget(self.mentalPause, r, 0, 1, 3)
     self.mentalPause.clicked.connect(lambda:toggle(self))
 
 

@@ -5,3 +5,4 @@
 
 
 from . import mentalPause
+from . import prefs

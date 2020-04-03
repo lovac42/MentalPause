@@ -19,8 +19,7 @@ from aqt import mw
 from anki.hooks import wrap
 import anki.sched
 
-from anki import version
-ANKI21 = version.startswith("2.1.")
+from .lib.com.lovac42.anki.version import ANKI21
 
 
 def daysLate(sched, card, _old):
