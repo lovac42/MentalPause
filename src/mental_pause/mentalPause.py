@@ -4,40 +4,29 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 
 
-
-# == User Config =========================================
-
-# Partial credit auto adjusted between 1-10 based on number of lapses.
-MIN_CREDIT = 1
-MAX_CREDIT = 10
-
-# == End Config ==========================================
-##########################################################
-
-
-from aqt import mw
+from aqt.qt import *
 from anki.hooks import wrap
 import anki.sched
 
-from .lib.com.lovac42.anki.version import ANKI21
+from .utils import maxFuzzIvlRange
 
 
 def daysLate(sched, card, _old):
-    sel=sched.col.conf.get("mentalPause",0)
+    sel=sched.col.conf.get("mentalPause", Qt.Unchecked)
 
-    if not sel:
-        return _old(sched,card)
+    if sel == Qt.Checked:
+        return 0 # no bonus
 
-    if sel==1:
-        div=min(MAX_CREDIT,max(MIN_CREDIT,card.lapses)) #1-10
-        due=_old(sched,card)//div
-        return max(0, int(due))
+    if sel == Qt.PartiallyChecked:
+        late_by = _old(sched, card)
+        cap = maxFuzzIvlRange(card.ivl)
+        return max(0, min(cap, late_by))
 
-    return 0 #sel==2
+    return _old(sched, card)
 
 
 anki.sched.Scheduler._daysLate = wrap(anki.sched.Scheduler._daysLate, daysLate, 'around')
-if ANKI21:
+try:
     import anki.schedv2
     anki.schedv2.Scheduler._daysLate = wrap(anki.schedv2.Scheduler._daysLate, daysLate, 'around')
-
+except ImportError: pass
