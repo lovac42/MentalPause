@@ -13,6 +13,7 @@ from aqt.qt import *
 
 from .lib.com.lovac42.anki.version import ANKI21
 from .lib.com.lovac42.anki.gui import muffins
+from .lib.com.lovac42.anki.gui.checkbox import TristateCheckbox
 
 if ANKI21:
     from PyQt5 import QtCore, QtGui, QtWidgets
@@ -23,33 +24,23 @@ else:
 def setupUi(self, Preferences):
     grid_layout = muffins.getMuffinsTab(self)
     r = grid_layout.rowCount()
-    self.mentalPause=QtWidgets.QCheckBox(self.lrnStage)
-    self.mentalPause.setText(_('MentalPause: Disable Delay Bonus'))
-    self.mentalPause.setTristate(True)
+    self.mentalPause = TristateCheckbox(self.lrnStage)
+    self.mentalPause.setDescriptions({
+        Qt.Unchecked:        "Mental Pause: This addon has been disabled",
+        Qt.PartiallyChecked: "Mental Pause: Delay bonus is capped at max fuzz range",
+        Qt.Checked:          "Mental Pause: Delay bonus has been eliminated",
+    })
     grid_layout.addWidget(self.mentalPause, r, 0, 1, 3)
-    self.mentalPause.clicked.connect(lambda:toggle(self))
 
 
 def load(self, mw):
-    qc = self.mw.col.conf
-    cb=qc.get("mentalPause", 0)
+    cb=self.mw.col.conf.get("mentalPause", 0)
     self.form.mentalPause.setCheckState(cb)
-    toggle(self.form)
 
 
 def save(self):
-    toggle(self.form)
-    qc = self.mw.col.conf
-    qc['mentalPause']=self.form.mentalPause.checkState()
-
-
-def toggle(self):
-    checked=self.mentalPause.checkState()
-    if checked==1:
-        txt='MentalPause: Partial Credits (days_late/lapse)'
-    else:
-        txt='MentalPause: Disable Delay Bonus'
-    self.mentalPause.setText(_(txt))
+    cb=self.form.mentalPause.checkState()
+    self.mw.col.conf['mentalPause']=cb
 
 
 aqt.forms.preferences.Ui_Preferences.setupUi = wrap(aqt.forms.preferences.Ui_Preferences.setupUi, setupUi, "after")
