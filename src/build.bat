@@ -3,7 +3,7 @@ set ZIP=C:\PROGRA~1\7-Zip\7z.exe a -tzip -y -r
 set REPO=mental_pause
 set NAME=mental_pause
 set PACKID=1707633456
-set VERSION=0.1.0
+set VERSION=0.1.1
 
 
 echo %VERSION% >%REPO%\VERSION

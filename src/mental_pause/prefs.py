@@ -34,13 +34,13 @@ def setupUi(self, Preferences):
 
 
 def load(self, mw):
-    cb=self.mw.col.conf.get("mentalPause", 0)
+    cb=self.mw.col.conf.get("mentalPause", Qt.Unchecked)
     self.form.mentalPause.setCheckState(cb)
 
 
 def save(self):
     cb=self.form.mentalPause.checkState()
-    self.mw.col.conf['mentalPause']=cb
+    self.mw.col.conf['mentalPause']=int(cb)
 
 
 aqt.forms.preferences.Ui_Preferences.setupUi = wrap(aqt.forms.preferences.Ui_Preferences.setupUi, setupUi, "after")
