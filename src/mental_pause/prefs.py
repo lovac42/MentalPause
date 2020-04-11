@@ -11,20 +11,18 @@ from anki.hooks import wrap
 from anki.lang import _
 from aqt.qt import *
 
-from .lib.com.lovac42.anki.version import ANKI21
 from .lib.com.lovac42.anki.gui import muffins
 from .lib.com.lovac42.anki.gui.checkbox import TristateCheckbox
 
-if ANKI21:
-    from PyQt5 import QtCore, QtGui, QtWidgets
-else:
-    from PyQt4 import QtCore, QtGui as QtWidgets
-
 
 def setupUi(self, Preferences):
-    grid_layout = muffins.getMuffinsTab(self)
+    groupbox = muffins.getMuffinsGroupbox(self, "Others")
+    grid_layout = groupbox.layout()
+    if not grid_layout:
+        grid_layout = QGridLayout(groupbox)
+
     r = grid_layout.rowCount()
-    self.mentalPause = TristateCheckbox(self.lrnStage)
+    self.mentalPause = TristateCheckbox(groupbox)
     self.mentalPause.setDescriptions({
         Qt.Unchecked:        "Mental Pause: This addon has been disabled",
         Qt.PartiallyChecked: "Mental Pause: Delay bonus is capped at max fuzz range",
@@ -43,6 +41,16 @@ def save(self):
     self.mw.col.conf['mentalPause']=int(cb)
 
 
-aqt.forms.preferences.Ui_Preferences.setupUi = wrap(aqt.forms.preferences.Ui_Preferences.setupUi, setupUi, "after")
-aqt.preferences.Preferences.__init__ = wrap(aqt.preferences.Preferences.__init__, load, "after")
-aqt.preferences.Preferences.accept = wrap(aqt.preferences.Preferences.accept, save, "before")
+# Wrap Crap #################
+
+aqt.forms.preferences.Ui_Preferences.setupUi = wrap(
+    aqt.forms.preferences.Ui_Preferences.setupUi, setupUi, "after"
+)
+
+aqt.preferences.Preferences.__init__ = wrap(
+    aqt.preferences.Preferences.__init__, load, "after"
+)
+
+aqt.preferences.Preferences.accept = wrap(
+    aqt.preferences.Preferences.accept, save, "before"
+)
