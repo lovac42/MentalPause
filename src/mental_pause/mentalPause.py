@@ -25,8 +25,13 @@ def daysLate(sched, card, _old):
     return _old(sched, card)
 
 
-anki.sched.Scheduler._daysLate = wrap(anki.sched.Scheduler._daysLate, daysLate, 'around')
+anki.sched.Scheduler._daysLate = wrap(
+    anki.sched.Scheduler._daysLate, daysLate, 'around'
+)
+
 try:
     import anki.schedv2
-    anki.schedv2.Scheduler._daysLate = wrap(anki.schedv2.Scheduler._daysLate, daysLate, 'around')
+    anki.schedv2.Scheduler._daysLate = wrap(
+        anki.schedv2.Scheduler._daysLate, daysLate, 'around'
+    )
 except ImportError: pass
