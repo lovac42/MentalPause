@@ -4,7 +4,10 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 
 
-from .lib.com.lovac42.anki.others import safety_first
+import os
 
-from . import mentalPause
-from . import prefs
+ADDON_PATH = os.path.dirname(__file__)
+
+ADDON_NAME = "MentalPause"
+
+TARGET_STABLE_VERSION = 23
