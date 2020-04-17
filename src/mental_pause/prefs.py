@@ -45,26 +45,28 @@ def load(self, mw):
     self.form.mentalPause.setCheckState(cb)
 
 
-def save(self):
-    cb=self.form.mentalPause.checkState()
-    self.mw.col.conf['mentalPause']=int(cb)
+# This is not needed as onClick also saves the state.
+# def save(self):
+    # _saveState(self.form.mentalPause)
+
+
+def _saveState(checkbox):
+    state = checkbox.checkState()
+    mw.col.conf["mentalPause"] = int(state)
 
 
 def runTest(form):
-    cb = form.mentalPause.checkState()
-    state = mw.col.conf["mentalPause"] = int(cb)
-
-    for i in range(20):
+    _saveState(form.mentalPause)
+    for i in range(25):
         testDelay(
-            random.randint(1,30),
-            random.randint(1,60)
+            ivl=random.randint(1,30),
+            delayed=random.randint(1,60)
         )
         testDelay(
-            random.randint(21,100),
-            random.randint(30,200)
+            ivl=random.randint(21,100),
+            delayed=random.randint(30,200)
         )
-
-    tooltip("MentalPause self-test: OK", period=1000)
+    tooltip("MentalPause, self-test: OK", period=800)
 
 
 
@@ -78,6 +80,6 @@ aqt.preferences.Preferences.__init__ = wrap(
     aqt.preferences.Preferences.__init__, load, "after"
 )
 
-aqt.preferences.Preferences.accept = wrap(
-    aqt.preferences.Preferences.accept, save, "before"
-)
+# aqt.preferences.Preferences.accept = wrap(
+    # aqt.preferences.Preferences.accept, save, "before"
+# )
