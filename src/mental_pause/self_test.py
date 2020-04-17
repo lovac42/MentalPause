@@ -11,6 +11,9 @@ from aqt.qt import *
 from .utils import maxFuzzIvlRange
 
 
+PARTIALLY_CHECKED = 1
+CHECKED = 2
+
 _card = None
 
 
@@ -32,16 +35,15 @@ def testDelay(ivl, delayed):
     _card.ivl = ivl
 
     late = mw.col.sched._daysLate(_card)
-    fuzz = maxFuzzIvlRange(ivl)
 
-    expected = (delayed, fuzz, 0, late) #add 1 for floats
-    state = int(mw.col.conf.get("mentalPause", 0))
-    # print(expected)
-
-    if state == 1:
-        assert late <= fuzz, 'Addon "MentalPause" failed self tests'
+    state = mw.col.conf.get("mentalPause", 0)
+    if state == PARTIALLY_CHECKED:
+        fuzz = maxFuzzIvlRange(ivl)
+        assert late <= fuzz, 'Addon "MentalPause" self-tests failed, delay exceeds max fuzz.'
+    elif state == CHECKED:
+        assert late == 0, 'Addon "MentalPause" self-tests failed, delay was not zero.'
     else:
-        assert late == expected[state], 'Addon "MentalPause" failed self tests'
+        assert late == delayed, 'Addon "MentalPause" self-tests failed, unexpected delay value.'
     # print("addon MentalPause tested fine.")
 
 
